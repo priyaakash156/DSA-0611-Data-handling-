@@ -1,0 +1,41 @@
+# Sample data
+df <- data.frame(
+  ID = 1:5,
+  Age = c(25, 30, 28, 35, 40),
+  Height = c(175, 180, 170, 165, 185),
+  Weight = c(70, 80, 65, 75, 90)
+)
+
+# Load necessary library
+library(ggplot2)
+
+# Scatter plot between Age and Weight
+ggplot(df, aes(x = Age, y = Weight)) +
+  geom_point() +
+  labs(x = "Age", y = "Weight") +
+  ggtitle("Scatter Plot of Age vs Weight")
+
+# Histogram of Height
+ggplot(df, aes(x = Height)) +
+  geom_histogram(binwidth = 5, fill = "blue", color = "black", aes(y = ..density..)) +
+  labs(x = "Height", y = "Density") +
+  ggtitle("Histogram of Height")
+
+# Line chart showing changes in Weight over IDs
+ggplot(df, aes(x = ID, y = Weight)) +
+  geom_line() +
+  labs(x = "ID", y = "Weight") +
+  ggtitle("Changes in Weight over IDs")
+
+# Box plot of Age
+ggplot(df, aes(x = "", y = Age)) +
+  geom_boxplot(fill = "orange", color = "black") +
+  coord_flip() +
+  labs(x = "", y = "Age") +
+  ggtitle("Box Plot of Age")
+
+# Density plot of Height
+ggplot(df, aes(x = Height)) +
+  geom_density(fill = "green", alpha = 0.5) +
+  labs(x = "Height", y = "Density") +
+  ggtitle("Density Plot of Height")
