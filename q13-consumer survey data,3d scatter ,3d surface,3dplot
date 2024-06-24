@@ -1,0 +1,56 @@
+# Load necessary libraries
+library(ggplot2)
+library(reshape2)
+library(plotly)
+library(akima)
+
+# Create the dataset
+data <- data.frame(
+  Product = c('A', 'B', 'C', 'D', 'E'),
+  Price = c(50, 70, 60, 45, 55),
+  Rating = c(4.2, 3.8, 4.0, 4.5, 3.9),
+  AgeGroup = c('25-35', '35-45', '18-25', '45-55', '25-35')
+)
+
+# Convert AgeGroup to numerical values
+data$AgeGroupNumeric <- as.numeric(factor(data$AgeGroup, levels = c('18-25', '25-35', '35-45', '45-55')))
+
+# View the data
+print(data)
+
+# Calculate correlations
+correlations <- cor(data[, c('Price', 'Rating', 'AgeGroupNumeric')])
+print(correlations)
+
+# 3D scatter plot using plotly
+plot_ly(data, x = ~Price, y = ~Rating, z = ~AgeGroupNumeric, type = 'scatter3d', mode = 'markers', 
+        marker = list(size = 5, color = ~Rating, colorscale = 'Viridis')) %>%
+  layout(title = '3D Scatter Plot: Price vs Rating vs Age Group',
+         scene = list(xaxis = list(title = 'Price ($)'),
+                      yaxis = list(title = 'Rating (out of 5)'),
+                      zaxis = list(title = 'Age Group')))
+
+# 3D surface plot using plotly
+interp_data <- interp(data$Price, data$AgeGroupNumeric, data$Rating)
+
+plot_ly(x = interp_data$x, y = interp_data$y, z = interp_data$z, type = 'surface') %>%
+  layout(title = '3D Surface Plot: Rating with varying Price and Age Group',
+         scene = list(xaxis = list(title = 'Price ($)'),
+                      yaxis = list(title = 'Age Group'),
+                      zaxis = list(title = 'Rating (out of 5)')))
+
+# 3D plot Rating vs Price and Age Group
+plot_ly(data, x = ~Price, y = ~Rating, z = ~AgeGroupNumeric, type = 'scatter3d', mode = 'markers', 
+        marker = list(size = 5, color = ~Rating, colorscale = 'Viridis')) %>%
+  layout(title = 'Rating vs Price vs Age Group',
+         scene = list(xaxis = list(title = 'Price ($)'),
+                      yaxis = list(title = 'Rating (out of 5)'),
+                      zaxis = list(title = 'Age Group')))
+
+# 3D plot Rating vs Age Group and Price
+plot_ly(data, x = ~AgeGroupNumeric, y = ~Rating, z = ~Price, type = 'scatter3d', mode = 'markers', 
+        marker = list(size = 5, color = ~Rating, colorscale = 'Viridis')) %>%
+  layout(title = 'Rating vs Age Group vs Price',
+         scene = list(xaxis = list(title = 'Age Group'),
+                      yaxis = list(title = 'Rating (out of 5)'),
+                      zaxis = list(title = 'Price ($)')))
