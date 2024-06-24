@@ -1,0 +1,54 @@
+# Load necessary libraries
+library(ggplot2)
+library(reshape2)
+library(plotly)
+
+# Create the dataset
+data <- data.frame(
+  Date = as.Date(c('2023-01-01', '2023-01-02', '2023-01-03', '2023-01-04', '2023-01-05')),
+  Temperature = c(10, 12, 8, 15, 14),
+  Humidity = c(75, 70, 80, 65, 72),
+  WindSpeed = c(15, 12, 18, 20, 16)
+)
+
+# View the data
+print(data)
+# Calculate correlations
+correlations <- cor(data[, 2:4])
+print(correlations)
+
+# 3D scatter plot using plotly
+plot_ly(data, x = ~WindSpeed, y = ~Humidity, z = ~Temperature, type = 'scatter3d', mode = 'markers', 
+        marker = list(size = 5, color = ~Temperature, colorscale = 'Viridis')) %>%
+  layout(title = '3D Scatter Plot: Wind Speed vs Humidity vs Temperature',
+         scene = list(xaxis = list(title = 'Wind Speed (km/h)'),
+                      yaxis = list(title = 'Humidity (%)'),
+                      zaxis = list(title = 'Temperature (°C)')))
+
+# 3D surface plot using plotly
+# We need to create a grid for surface plot, hence using interpolation
+
+library(akima)
+interp_data <- interp(data$WindSpeed, data$Humidity, data$Temperature)
+
+plot_ly(x = interp_data$x, y = interp_data$y, z = interp_data$z, type = 'surface') %>%
+  layout(title = '3D Surface Plot: Temperature with varying Humidity and Wind Speed',
+         scene = list(xaxis = list(title = 'Wind Speed (km/h)'),
+                      yaxis = list(title = 'Humidity (%)'),
+                      zaxis = list(title = 'Temperature (°C)')))
+
+# 3D plot Temperature vs Humidity and Wind Speed
+plot_ly(data, x = ~Humidity, y = ~Temperature, z = ~WindSpeed, type = 'scatter3d', mode = 'markers', 
+        marker = list(size = 5, color = ~Temperature, colorscale = 'Viridis')) %>%
+  layout(title = 'Temperature vs Humidity vs Wind Speed',
+         scene = list(xaxis = list(title = 'Humidity (%)'),
+                      yaxis = list(title = 'Temperature (°C)'),
+                      zaxis = list(title = 'Wind Speed (km/h)')))
+
+# 3D plot Temperature vs Wind Speed and Humidity
+plot_ly(data, x = ~WindSpeed, y = ~Temperature, z = ~Humidity, type = 'scatter3d', mode = 'markers', 
+        marker = list(size = 5, color = ~Temperature, colorscale = 'Viridis')) %>%
+  layout(title = 'Temperature vs Wind Speed vs Humidity',
+         scene = list(xaxis = list(title = 'Wind Speed (km/h)'),
+                      yaxis = list(title = 'Temperature (°C)'),
+                      zaxis = list(title = 'Humidity (%)')))
