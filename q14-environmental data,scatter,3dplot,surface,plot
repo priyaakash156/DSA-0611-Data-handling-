@@ -1,0 +1,53 @@
+# Load necessary libraries
+library(ggplot2)
+library(reshape2)
+library(plotly)
+library(akima)
+
+# Create the dataset
+data <- data.frame(
+  Location = c('A', 'B', 'C', 'D', 'E'),
+  Temperature = c(15, 20, 18, 12, 17),
+  Humidity = c(65, 70, 68, 60, 72),
+  CO2Levels = c(400, 450, 420, 380, 430)
+)
+
+# View the data
+print(data)
+
+# Calculate correlations
+correlations <- cor(data[, c('Temperature', 'Humidity', 'CO2Levels')])
+print(correlations)
+
+# 3D scatter plot using plotly
+plot_ly(data, x = ~Temperature, y = ~Humidity, z = ~CO2Levels, type = 'scatter3d', mode = 'markers', 
+        marker = list(size = 5, color = ~CO2Levels, colorscale = 'Viridis')) %>%
+  layout(title = '3D Scatter Plot: Temperature vs Humidity vs CO2 Levels',
+         scene = list(xaxis = list(title = 'Temperature (°C)'),
+                      yaxis = list(title = 'Humidity (%)'),
+                      zaxis = list(title = 'CO2 Levels (ppm)')))
+
+# 3D surface plot using plotly
+interp_data <- interp(data$Temperature, data$Humidity, data$CO2Levels)
+
+plot_ly(x = interp_data$x, y = interp_data$y, z = interp_data$z, type = 'surface') %>%
+  layout(title = '3D Surface Plot: CO2 Levels with varying Temperature and Humidity',
+         scene = list(xaxis = list(title = 'Temperature (°C)'),
+                      yaxis = list(title = 'Humidity (%)'),
+                      zaxis = list(title = 'CO2 Levels (ppm)')))
+
+# 3D plot CO2 Levels vs Temperature and Humidity
+plot_ly(data, x = ~Temperature, y = ~CO2Levels, z = ~Humidity, type = 'scatter3d', mode = 'markers', 
+        marker = list(size = 5, color = ~CO2Levels, colorscale = 'Viridis')) %>%
+  layout(title = 'CO2 Levels vs Temperature vs Humidity',
+         scene = list(xaxis = list(title = 'Temperature (°C)'),
+                      yaxis = list(title = 'CO2 Levels (ppm)'),
+                      zaxis = list(title = 'Humidity (%)')))
+
+# 3D plot CO2 Levels vs Humidity and Temperature
+plot_ly(data, x = ~Humidity, y = ~CO2Levels, z = ~Temperature, type = 'scatter3d', mode = 'markers', 
+        marker = list(size = 5, color = ~CO2Levels, colorscale = 'Viridis')) %>%
+  layout(title = 'CO2 Levels vs Humidity vs Temperature',
+         scene = list(xaxis = list(title = 'Humidity (%)'),
+                      yaxis = list(title = 'CO2 Levels (ppm)'),
+                      zaxis = list(title = 'Temperature (°C)')))
