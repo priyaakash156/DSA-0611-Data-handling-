@@ -1,0 +1,134 @@
+library(dplyr)
+library(ggplot2)
+library(plot3D)
+library(scatterplot3d)
+library(akima)
+
+# 1. Load Data
+data <- data.frame(
+  Customer_ID = 1:30,
+  Age = c(35, 28, 42, 25, 38, 45, 23, 34, 40, 30, 29, 50, 32, 47, 36, 27, 41, 33, 39, 26, 48, 31, 44, 37, 43, 24, 46, 49, 21, 22),
+  Gender = c('Male', 'Female', 'Male', 'Female', 'Male', 'Female', 'Male', 'Female', 'Male', 'Female', 'Male', 'Female', 'Male', 'Female', 'Male', 'Female', 'Male', 'Female', 'Male', 'Female', 'Male', 'Female', 'Male', 'Female', 'Male', 'Female', 'Male', 'Female', 'Male', 'Female'),
+  Purchase_Amount = c(100, 80, 120, 90, 110, 150, 60, 130, 95, 85, 70, 160, 75, 140, 115, 65, 125, 135, 105, 95, 145, 90, 120, 125, 130, 85, 155, 140, 50, 60),
+  Membership_Level = c('Gold', 'Silver', 'Bronze', 'Bronze', 'Silver', 'Gold', 'Silver', 'Gold', 'Bronze', 'Silver', 'Bronze', 'Gold', 'Silver', 'Bronze', 'Gold', 'Silver', 'Bronze', 'Gold', 'Silver', 'Bronze', 'Gold', 'Silver', 'Bronze', 'Gold', 'Silver', 'Bronze', 'Gold', 'Silver', 'Bronze', 'Silver')
+)
+
+# 2. Data Cleaning
+# Check for missing values
+sum(is.na(data))
+
+# 3. Data Processing
+# Convert categorical data to factors
+data$Gender <- as.factor(data$Gender)
+data$Membership_Level <- as.factor(data$Membership_Level)
+
+# 4. EDA Analysis
+summary(data)
+
+# 5. Visualization - 20 plots
+# Histogram of Age
+ggplot(data, aes(x=Age)) + 
+  geom_histogram(binwidth=5, fill="skyblue", color="black") +
+  theme_minimal() +
+  ggtitle("Histogram of Age")
+
+# Histogram of Purchase Amount
+ggplot(data, aes(x=Purchase_Amount)) + 
+  geom_histogram(binwidth=10, fill="orange", color="black") +
+  theme_minimal() +
+  ggtitle("Histogram of Purchase Amount")
+
+# Bar Plot of Gender Distribution
+ggplot(data, aes(x=Gender)) + 
+  geom_bar(fill="purple") +
+  theme_minimal() +
+  ggtitle("Bar Plot of Gender Distribution")
+
+# Bar Plot of Membership Level Distribution
+ggplot(data, aes(x=Membership_Level)) + 
+  geom_bar(fill="green") +
+  theme_minimal() +
+  ggtitle("Bar Plot of Membership Level Distribution")
+
+# Boxplot of Purchase Amount by Gender
+ggplot(data, aes(x=Gender, y=Purchase_Amount, fill=Gender)) + 
+  geom_boxplot() +
+  theme_minimal() +
+  ggtitle("Boxplot of Purchase Amount by Gender")
+
+# Boxplot of Purchase Amount by Membership Level
+ggplot(data, aes(x=Membership_Level, y=Purchase_Amount, fill=Membership_Level)) + 
+  geom_boxplot() +
+  theme_minimal() +
+  ggtitle("Boxplot of Purchase Amount by Membership Level")
+
+# Scatter Plot of Age vs. Purchase Amount
+ggplot(data, aes(x=Age, y=Purchase_Amount, color=Gender)) + 
+  geom_point(size=3) +
+  theme_minimal() +
+  ggtitle("Scatter Plot of Age vs. Purchase Amount")
+
+# Violin Plot of Purchase Amount by Gender
+ggplot(data, aes(x=Gender, y=Purchase_Amount, fill=Gender)) + 
+  geom_violin() +
+  theme_minimal() +
+  ggtitle("Violin Plot of Purchase Amount by Gender")
+
+# Violin Plot of Purchase Amount by Membership Level
+ggplot(data, aes(x=Membership_Level, y=Purchase_Amount, fill=Membership_Level)) + 
+  geom_violin() +
+  theme_minimal() +
+  ggtitle("Violin Plot of Purchase Amount by Membership Level")
+
+# Density Plot of Purchase Amount by Gender
+ggplot(data, aes(x=Purchase_Amount, fill=Gender)) + 
+  geom_density(alpha=0.5) +
+  theme_minimal() +
+  ggtitle("Density Plot of Purchase Amount by Gender")
+
+# Density Plot of Purchase Amount by Membership Level
+ggplot(data, aes(x=Purchase_Amount, fill=Membership_Level)) + 
+  geom_density(alpha=0.5) +
+  theme_minimal() +
+  ggtitle("Density Plot of Purchase Amount by Membership Level")
+
+# Bar Plot of Age by Gender
+ggplot(data, aes(x=Gender, y=Age, fill=Gender)) + 
+  geom_bar(stat="identity") +
+  theme_minimal() +
+  ggtitle("Bar Plot of Age by Gender")
+
+# Bar Plot of Age by Membership Level
+ggplot(data, aes(x=Membership_Level, y=Age, fill=Membership_Level)) + 
+  geom_bar(stat="identity") +
+  theme_minimal() +
+  ggtitle("Bar Plot of Age by Membership Level")
+
+# 3D Scatter Plot of Age, Purchase Amount and Membership Level
+scatterplot3d(data$Age, data$Purchase_Amount, as.numeric(data$Membership_Level),
+              xlab = "Age", ylab = "Purchase Amount", zlab = "Membership Level",
+              main = "3D Scatter Plot of Age, Purchase Amount and Membership Level")
+
+# 3D Surface Plot
+interp_data <- interp(x = data$Age, y = data$Purchase_Amount, z = as.numeric(data$Membership_Level), 
+                      xo = seq(min(data$Age), max(data$Age), length = 50), 
+                      yo = seq(min(data$Purchase_Amount), max(data$Purchase_Amount), length = 50))
+
+persp3D(x = interp_data$x, y = interp_data$y, z = interp_data$z, col = "lightblue", 
+        theta = 30, phi = 30, xlab = "Age", ylab = "Purchase Amount", zlab = "Membership Level",
+        main = "3D Surface Plot of Membership Level by Age and Purchase Amount")
+
+# Save plots
+ggsave("histogram_age.png")
+ggsave("histogram_purchase_amount.png")
+ggsave("bar_plot_gender.png")
+ggsave("bar_plot_membership.png")
+ggsave("boxplot_gender.png")
+ggsave("boxplot_membership.png")
+ggsave("scatter_age_purchase.png")
+ggsave("violin_gender.png")
+ggsave("violin_membership.png")
+ggsave("density_gender.png")
+ggsave("density_membership.png")
+ggsave("bar_age_gender.png")
+ggsave("bar_age_membership.png")
